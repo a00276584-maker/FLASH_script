@@ -1,0 +1,358 @@
+FLASH: local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()
+
+local Window = WindUI:CreateWindow({
+    Title = "FLASH_PANEL",
+    Icon = "home",
+    Theme = "Dark",
+    Folder = "FLASH_PANEL",
+})
+
+local PlayerTab = Window:Tab({
+    Title = "Player",
+    Icon = "user",
+})
+
+PlayerTab:Slider({
+    Title = "Walk Speed",
+    Step = 1,
+    Value = {
+        Min = 16,
+        Max = 100,
+        Default = 16,
+    },
+    Callback = function(value)
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
+    end,
+})
+
+PlayerTab:Space()
+
+PlayerTab:Slider({
+    Title = "Jump Power",
+    Step = 1,
+    Value = {
+        Min = 50,
+        Max = 150,
+        Default = 50,
+    },
+    Callback = function(value)
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            humanoid.UseJumpPower = true
+            humanoid.JumpPower = value
+        end
+    end,
+})
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local Player = Players.LocalPlayer
+
+PlayerTab:Toggle({
+    Title = "Shift Lock",
+    Icon = "lock",
+    Value = false,
+
+    Callback = function(enabled)
+        local Camera = workspace.CurrentCamera
+
+        if enabled then
+            UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+
+            local Character = Player.Character
+            local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+
+            if Humanoid then
+                Humanoid.AutoRotate = false
+            end
+
+            task.spawn(function()
+                while enabled do
+                    local Character = Player.Character
+                    local Root = Character and Character:FindFirstChild("HumanoidRootPart")
+
+                    if Root and Camera then
+                        local look = Camera.CFrame.LookVector
+                        Root.CFrame = CFrame.new(
+                            Root.Position,
+                            Root.Position + Vector3.new(look.X, 0, look.Z)
+                        )
+                    end
+
+                    task.wait()
+                end
+            end)
+
+        else
+            UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+
+            local Character = Player.Character
+            local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+
+            if Humanoid then
+                Humanoid.AutoRotate = true
+            end
+        end
+    end,
+})
+
+local UserInputService = game:GetService("UserInputService")
+
+PlayerTab:Toggle({
+    Title = "Infinite Jump",
+    Icon = "arrow-up",
+    Value = false,
+
+    Callback = function(enabled)
+        if enabled then
+            _G.InfiniteJump = true
+        else
+            _G.InfiniteJump = false
+        end
+    end,
+})
+
+UserInputService.JumpRequest:Connect(function()
+    if _G.InfiniteJump then
+        local character = game.Players.LocalPlayer.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+local RunService = game:GetService("RunService")
+
+local noclipConnection
+
+PlayerTab:Toggle({
+    Title = "Noclip",
+    Icon = "ghost",
+    Value = false,
+
+    Callback = function(enabled)
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+
+        if enabled then
+            noclipConnection = RunService.Stepped:Connect(function()
+                local character = game.Players.LocalPlayer.Character
+
+if character then
+                    for _, part in ipairs(character:GetDescendants()) do
+                        if part:IsA("BasePar
+FLASH: t") then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            local character = game.Players.LocalPlayer.Character
+
+            if character then
+                for _, part in ipairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        end
+    end,
+})
+
+local VirtualUser = game:GetService("VirtualUser")
+
+PlayerTab:Toggle({
+    Title = "Anti AFK",
+    Icon = "clock",
+    Value = false,
+
+    Callback = function(enabled)
+        _G.AntiAFK = enabled
+
+        if enabled then
+            Player.Idled:Connect(function()
+                if _G.AntiAFK then
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end
+            end)
+        end
+    end,
+})
+
+local RunService = game:GetService("RunService")
+
+local antiFlingConnection
+
+PlayerTab:Toggle({
+    Title = "Anti Fling",
+    Icon = "shield",
+    Value = false,
+
+    Callback = function(enabled)
+        if antiFlingConnection then
+            antiFlingConnection:Disconnect()
+            antiFlingConnection = nil
+        end
+
+        if enabled then
+            antiFlingConnection = RunService.Heartbeat:Connect(function()
+                local character = Player.Character
+                local root = character and character:FindFirstChild("HumanoidRootPart")
+
+                if root then
+                    root.AssemblyLinearVelocity = Vector3.zero
+                    root.AssemblyAngularVelocity = Vector3.zero
+                end
+            end)
+        end
+    end,
+})
+
+PlayerTab:Button({
+    Title = "Respawn",
+    Icon = "refresh-cw",
+    Callback = function()
+        local character = Player.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            humanoid.Health = 0
+        end
+    end,
+})
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+
+PlayerTab:Toggle({
+    Title = "Anti Sit",
+    Icon = "ban",
+    Value = false,
+
+    Callback = function(enabled)
+        _G.AntiSit = enabled
+
+        if enabled then
+            task.spawn(function()
+                while _G.AntiSit do
+                    local character = Player.Character
+                    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+                    if humanoid and humanoid.Sit then
+                        humanoid.Sit = false
+                        humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                    end
+
+                    task.wait(0.1)
+                end
+            end)
+        end
+    end,
+})
+
+local RunService = game:GetService("RunService")
+local freezeConnection
+
+PlayerTab:Toggle({
+    Title = "Freeze",
+    Icon = "snowflake",
+    Value = false,
+
+    Callback = function(enabled)
+        if freezeConnection then
+            freezeConnection:Disconnect()
+            freezeConnection = nil
+        end
+
+        local character = Player.Character
+        local root = character and character:FindFirstChild("HumanoidRootPart")
+
+        if enabled and root then
+            root.Anchored = true
+        elseif root then
+            root.Anchored = false
+        end
+    end,
+})
+
+local TargetTab = Window:Tab({
+    Title = "Target",
+    Icon = "target",
+})
+
+local selectedTarget
+
+local function GetPlayers()
+    local list = {}
+
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer then
+            table.insert(list, player.Name)
+        end
+    end
+
+    return list
+end
+
+TargetTab:Dropdown({
+    Title = "Select Player",
+    Values = GetPlayers(),
+    Value = nil,
+
+Callback = function(value)
+        selectedTarget = game.Players:FindFirstChild(value)
+    end,
+})
+
+TargetTab:Space()
+
+TargetTab:Toggle({
+    Title = "Stay With Target",
+    Icon = "navigation",
+    Value = false,
+
+    Callback = function(enabled)
+        _G.StayWithTarget = enabled
+    end,
+})
+
+TargetTab:Space()
+
+TargetTab:Toggle({
+    Title = "Anti Sit",
+    Icon = "ban",
+    Value = false,
+
+    Callback = function(enabled)
+        _G.TargetAntiSit = enabled
+    end,
+})
+
+Window:SelectTab(1)
+
+local myTheme = WindUI:AddTheme({
+    Name = "FLASH",
+    Background = Color3.fromHex("#1a1a2e"),
+    Accent     = Color3.fromHex("#16213e"),
+    Text       = Color3.fromHex("#e0e0e0"),
+    -- ... other keys
+})
+
+WindUI:SetTheme("FLASH")
