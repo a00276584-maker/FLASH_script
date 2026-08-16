@@ -1,0 +1,35 @@
+local WindUI = loadstring(game:HttpGet(
+  "https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"
+))()
+
+local Window = WindUI:CreateWindow({
+  Title = "flash_Yo",
+  Icon = "star",
+  Theme = "home",
+})
+
+local Tab = Window:Tab({ Title = "Main", Icon = "home" })
+
+Tab:Toggle({
+  Title = "Enable Feature",
+  Value = false,
+  Callback = function(state)
+    print("Feature:", state)
+  end,
+})
+
+PlayerTab:Toggle({
+    Title = "Walk Fling",
+    Icon = "zap",
+    Value = false,
+})
+
+local myTheme = WindUI:AddTheme({
+    Name = "FLASH",
+    Background = Color3.fromHex("#1a1a2e"),
+    Accent     = Color3.fromHex("#16213e"),
+    Text       = Color3.fromHex("#e0e0e0"),
+    -- ... other keys
+})
+
+WindUI:SetTheme("FLASH")
