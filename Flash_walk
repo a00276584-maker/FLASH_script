@@ -1,0 +1,67 @@
+local WindUI = loadstring(game:HttpGet(
+  "https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"
+))()
+
+local Window = WindUI:CreateWindow({
+  Title = "FLASH_Walk",
+  Icon = "cucumber",
+  Theme = "Dark",
+})
+
+local Tab = Window:Tab({ Title = "Main", Icon = "home" })
+
+Tab:Toggle({
+  Title = "Enable Feature",
+  Value = false,
+  Callback = function(state)
+    print("Feature:", state)
+  end,
+})
+
+local RunService = game:GetService("RunService")
+
+local WalkFling = false
+local WalkFlingConnection
+
+PlayerTab:Toggle({
+    Title = "Walk Fling",
+    Icon = "zap",
+    Value = false,
+
+    Callback = function(enabled)
+        WalkFling = enabled
+
+        if WalkFlingConnection then
+            WalkFlingConnection:Disconnect()
+            WalkFlingConnection = nil
+        end
+
+        if enabled then
+            WalkFlingConnection = RunService.Heartbeat:Connect(function()
+                local Character = Player.Character
+                local Root = Character and Character:FindFirstChild("HumanoidRootPart")
+
+                if Root then
+                    Root.AssemblyAngularVelocity = Vector3.new(0, 35, 0)
+                end
+            end)
+        else
+            local Character = Player.Character
+            local Root = Character and Character:FindFirstChild("HumanoidRootPart")
+
+            if Root then
+                Root.AssemblyAngularVelocity = Vector3.zero
+            end
+        end
+    end,
+})
+
+local myTheme = WindUI:AddTheme({
+    Name = "FLASH",
+    Background = Color3.fromHex("#1a1a2e"),
+    Accent     = Color3.fromHex("#16213e"),
+    Text       = Color3.fromHex("#e0e0e0"),
+    -- ... other keys
+})
+
+WindUI:SetTheme("FLASH")
